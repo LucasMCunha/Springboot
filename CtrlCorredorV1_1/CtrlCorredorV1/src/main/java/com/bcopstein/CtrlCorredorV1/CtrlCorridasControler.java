@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/ctrlCorridas")
 public class CtrlCorridasControler {
     private JdbcTemplate jdbcTemplate;
+    private RepCorridasControler x = new RepCorridasControler();
 
     @Autowired
     public CtrlCorridasControler(JdbcTemplate jdbcTemplate) {
@@ -38,42 +39,27 @@ public class CtrlCorridasControler {
 
     @GetMapping("/corredor")
     @CrossOrigin(origins = "*")
-    public List<Corredor> consultaCorredor() {
-        List<Corredor> resp = this.jdbcTemplate.query("SELECT * from corredores",
-                (rs, rowNum) -> new Corredor(rs.getString("cpf"), rs.getString("nome"), rs.getInt("diaDn"),
-                        rs.getInt("mesDn"), rs.getInt("anoDn"), rs.getString("genero")));
-        return resp;
+    public void consultaCorredor() {
+    x.consultaCorredor();
     }
 
     @PostMapping("/corredor")
     @CrossOrigin(origins = "*")
     public boolean cadastraCorredor(@RequestBody final Corredor corredor) {
-        // Limpa a base de dados
-        this.jdbcTemplate.batchUpdate("DELETE from Corredores");
-        // Então cadastra o novo "corredor único"
-        this.jdbcTemplate.update("INSERT INTO corredores(cpf,nome,diaDn,mesDn,anoDn,genero) VALUES (?,?,?,?,?,?)",
-                corredor.getCpf(), corredor.getNome(), corredor.getDiaDn(), corredor.getMesDn(), corredor.getAnoDn(),
-                corredor.getGenero());
-        return true;
+    x.cadastraCorredor(corredor);
+    return true;
     }
 
     @GetMapping("/eventos")
     @CrossOrigin(origins = "*")
-    public List<Evento> consultaEventos() {
-        List<Evento> resp = this.jdbcTemplate.query("SELECT * from eventos",
-                (rs, rowNum) -> new Evento(rs.getInt("id"), rs.getString("nome"), rs.getInt("dia"), rs.getInt("mes"),
-                        rs.getInt("ano"), rs.getInt("distancia"), rs.getInt("horas"), rs.getInt("minutos"),
-                        rs.getInt("segundos")));
-        return resp;
+    public void consultaEventos() {
+        x.consultaEventos();
     }
 
     @PostMapping("/eventos") // adiciona evento no único corredor
     @CrossOrigin(origins = "*")
     public boolean informaEvento(@RequestBody final Evento evento) {
-        this.jdbcTemplate.update(
-                "INSERT INTO eventos(id,nome,dia,mes,ano,distancia,horas,minutos,segundos) VALUES (?,?,?,?,?,?,?,?,?)",
-                evento.getId(), evento.getNome(), evento.getDia(), evento.getMes(), evento.getAno(),
-                evento.getDistancia(), evento.getHoras(), evento.getMinutos(), evento.getSegundos());
-        return true;
+     x.informaEvento(evento);
+     return true;
     }
 }
